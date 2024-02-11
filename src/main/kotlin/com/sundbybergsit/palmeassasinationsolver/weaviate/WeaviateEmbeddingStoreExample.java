@@ -16,7 +16,7 @@ public class WeaviateEmbeddingStoreExample {
 
         EmbeddingStore<TextSegment> embeddingStore = WeaviateEmbeddingStore.builder()
                 // Find it under "Show API keys" of your Weaviate cluster.
-                .apiKey(System.getenv("WEAVIATE_API_KEY"))
+                .apiKey(System.getenv("weaviate_api_key"))
                 // The scheme, e.g. "https" of cluster URL. Find in under Details of your Weaviate cluster.
                 .scheme("https")
                 // The host, e.g. "test-o1gvgnp4.weaviate.network" of cluster URL.
