@@ -36,26 +36,28 @@ class PalmeAssassinationSolverApplication
 fun main(args: Array<String>) {
     runApplication<PalmeAssassinationSolverApplication>(*args)
     val polymath: Polymath = createPolymath()
-    polymath.answer(args.toString())
+    println(polymath.answer(args[0]))
 }
 
 private fun createPolymath(): Polymath {
     val chatModel: ChatLanguageModel = OpenAiChatModel.builder()
+        .organizationId(System.getenv("organization_id"))
         .apiKey(System.getenv("open_ai_key"))
-        .modelName(OpenAiChatModelName.GPT_4)
+        .maxRetries(1)
+        .modelName(OpenAiChatModelName.GPT_4_0613)
         .build()
 
     val embeddingModel: EmbeddingModel = AllMiniLmL6V2EmbeddingModel()
 
     val hearingContentRetriever: ContentRetriever = EmbeddingStoreContentRetriever.builder()
-        .embeddingStore(embed(toPath("mop/txt/forhor/pol-1986-06-26-annette-kohut-forhor.txt"), embeddingModel))
+        .embeddingStore(embed(toPath("/mop/txt/forhor/pol-1986-06-26-annette-kohut-forhor.txt"), embeddingModel))
         .embeddingModel(embeddingModel)
         .maxResults(2)
         .minScore(0.6)
         .build()
 
     val factsContentRetriever: ContentRetriever = EmbeddingStoreContentRetriever.builder()
-        .embeddingStore(embed(toPath("mop/txt/facts.txt"), embeddingModel))
+        .embeddingStore(embed(toPath("/mop/txt/facts.txt"), embeddingModel))
         .embeddingModel(embeddingModel)
         .maxResults(2)
         .minScore(0.6)
