@@ -36,7 +36,7 @@ class PalmeAssassinationSolverApplication
 fun main(args: Array<String>) {
     runApplication<PalmeAssassinationSolverApplication>(*args)
     val polymath: Polymath = createPolymath()
-    println(polymath.answer("Du är en talesperson för polisen. Svara formellt med högst fyra meningar. ${args[0]}"))
+    println(polymath.answer("Du är en talesperson för polisens kalla fall-grupp. Svara formellt med högst fyra meningar. ${args[0]}"))
 }
 
 private fun createPolymath(): Polymath {
@@ -52,14 +52,14 @@ private fun createPolymath(): Polymath {
     val hearingContentRetriever: ContentRetriever = EmbeddingStoreContentRetriever.builder()
         .embeddingStore(embed(toPath("/mop/txt/forhor/pol-1986-06-26-annette-kohut-forhor.txt"), embeddingModel))
         .embeddingModel(embeddingModel)
-        .maxResults(2)
-        .minScore(0.6)
+        .maxResults(10)
+        .minScore(0.7)
         .build()
 
     val factsContentRetriever: ContentRetriever = EmbeddingStoreContentRetriever.builder()
         .embeddingStore(embed(toPath("/mop/txt/facts.txt"), embeddingModel))
         .embeddingModel(embeddingModel)
-        .maxResults(2)
+        .maxResults(5)
         .minScore(0.6)
         .build()
 
