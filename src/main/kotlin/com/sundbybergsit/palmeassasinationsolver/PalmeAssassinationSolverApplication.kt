@@ -36,7 +36,7 @@ class PalmeAssassinationSolverApplication
 fun main(args: Array<String>) {
     runApplication<PalmeAssassinationSolverApplication>(*args)
     val polymath: Polymath = createPolymath()
-    println(polymath.answer(args[0]))
+    println(polymath.answer("Du är en talesperson för polisen. Svara formellt med högst fyra meningar. ${args[0]}"))
 }
 
 private fun createPolymath(): Polymath {
