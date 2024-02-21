@@ -63,6 +63,20 @@ private fun createPolymath(): Polymath {
         .minScore(0.7)
         .build()
 
+    val christerPetterssonContentRetriever: ContentRetriever = EmbeddingStoreContentRetriever.builder()
+        .embeddingStore(embed(toPath("/mop/txt/personer/christer-pettersson.txt"), embeddingModel))
+        .embeddingModel(embeddingModel)
+        .maxResults(5)
+        .minScore(0.6)
+        .build()
+
+    val mordarenContentRetriever: ContentRetriever = EmbeddingStoreContentRetriever.builder()
+        .embeddingStore(embed(toPath("/mop/txt/personer/mordaren.txt"), embeddingModel))
+        .embeddingModel(embeddingModel)
+        .maxResults(5)
+        .minScore(0.8)
+        .build()
+
     val factsContentRetriever: ContentRetriever = EmbeddingStoreContentRetriever.builder()
         .embeddingStore(embed(toPath("/mop/txt/facts.txt"), embeddingModel))
         .embeddingModel(embeddingModel)
@@ -74,6 +88,8 @@ private fun createPolymath(): Polymath {
     retrieverToDescription[hearingContentRetriever] = "police hearings of Annette Kohut"
     retrieverToDescription[factsContentRetriever] = "facts about the murder of Olof Palme"
     retrieverToDescription[proMemoriaContentRetriever] = "police promemoria about the murder of Olof Palme"
+    retrieverToDescription[christerPetterssonContentRetriever] = "the convicted suspect Christer Pettersson"
+    retrieverToDescription[mordarenContentRetriever] = "the murderer"
     val queryRouter: QueryRouter = LanguageModelQueryRouter(chatModel, retrieverToDescription)
 
     val retrievalAugmentor: RetrievalAugmentor = DefaultRetrievalAugmentor.builder()
