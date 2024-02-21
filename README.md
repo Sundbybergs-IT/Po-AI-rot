@@ -1,1 +1,3 @@
-# palme-assassination-solver
+# AI Poirot
+
+![ Alt Text](logo.png)
