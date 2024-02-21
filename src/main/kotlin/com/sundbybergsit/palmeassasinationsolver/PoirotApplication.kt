@@ -144,7 +144,7 @@ fun getHearings(vararg titleFileNamePairs: Pair<String, String>, embeddingModel:
             EmbeddingStoreContentRetriever.builder()
                 .embeddingStore(embed(toPath(titleFileNamePair.second), embeddingModel))
                 .embeddingModel(embeddingModel)
-                .maxResults(10)
+                .maxResults(20)
                 .minScore(0.7)
                 .build())
         )
