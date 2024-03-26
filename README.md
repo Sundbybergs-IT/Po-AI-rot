@@ -1,3 +1,3 @@
-# AI Poirot
+# Po(AI)rot
 
 ![ Alt Text](logo.png)
