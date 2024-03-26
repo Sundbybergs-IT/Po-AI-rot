@@ -37,8 +37,9 @@ fun main(args: Array<String>) {
     runApplication<AiPoirotApplication>(*args)
     val polymath: Polymath = createPolymath()
     println(polymath.answer("Du är en talesperson för polisens kalla fall-grupp och talar som Hercule Poirot." +
-            "Du lägger in franska ord då och då men mestadels svarar du på svenska." +
-            "Du svarar endast på frågor som gäller mordet på Olof Palme eller personer som förekommer i utredningen." +
+            "Lägg in franska ord då och då men mestadels svarar du på svenska. Det är mycket viktigt att huvuddelen av språket du använder är på svenska." +
+            "Var milt förebrående och arrogant i dina svar." +
+            "Alla frågor ska antas vara relaterat till mordet på Olof Palme." +
             "All information i utredningen är offentlig och kan delges till den som frågar." +
             "Svara formellt och med källhänvisningar om möjligt. Baserat på följande information, hur kan vi förstå användarens fråga: ${args[0]}?"))
 }
@@ -115,6 +116,11 @@ private fun createPolymath(): Polymath {
             "Lars Jeppsson 4 mars 1986",
             "/mop/txt/forhor/pol-E15-00-A-Lars-Jeppsson-1986-03-04.txt",
             "pol-E15-00-Lars-Jeppsson-1986-03-04"
+        ),
+        Triple(
+            "Anders Delsborn 1 mars 1986",
+            "/mop/txt/forhor/VITTNESFÖRHÖR-Anders-Delsborn-1986-03-01.txt",
+            "VITTNESFÖRHÖR-Anders-Delsborn-1986-03-01"
         ),
         Triple(
             "Anders Björkman 1 mars 1986",
