@@ -23,10 +23,10 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 
-	api("dev.langchain4j:langchain4j:0.28.0")
-	implementation("dev.langchain4j:langchain4j-open-ai-spring-boot-starter:0.28.0")
-	implementation("dev.langchain4j:langchain4j-embeddings-all-minilm-l6-v2:0.28.0")
-	implementation("dev.langchain4j:langchain4j-weaviate:0.28.0")
+	api("dev.langchain4j:langchain4j:0.29.0")
+	implementation("dev.langchain4j:langchain4j-open-ai-spring-boot-starter:0.29.0")
+	implementation("dev.langchain4j:langchain4j-embeddings-all-minilm-l6-v2:0.29.0")
+	implementation("dev.langchain4j:langchain4j-weaviate:0.29.0")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
