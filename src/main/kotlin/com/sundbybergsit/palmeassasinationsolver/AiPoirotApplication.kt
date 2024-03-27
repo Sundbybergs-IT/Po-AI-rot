@@ -161,6 +161,7 @@ private fun createPolymath(): Polymath {
         Pair("Lars Jeppsson", "/mop/txt/personer/lars-jeppsson.txt"),
         Pair("Anders Delsborn", "/mop/txt/personer/anders-delsborn.txt"),
         Pair("Inge Morelius", "/mop/txt/personer/inge-morelius.txt"),
+        Pair("Olof Palme", "/mop/txt/personer/olof-palme.txt"),
         embeddingModel = embeddingModel
     )) {
         retrieverToDescription[person.second] = "Allmänna faktauppgifter om ${person.first}"
