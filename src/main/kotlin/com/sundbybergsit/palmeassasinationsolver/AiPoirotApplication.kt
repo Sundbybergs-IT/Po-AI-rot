@@ -159,7 +159,7 @@ private fun createPolymath(): Polymath {
         Pair("Christer Andersson", "/mop/txt/personer/christer-andersson.txt"),
         Pair("Anders Björkman", "/mop/txt/personer/anders-bjorkman.txt"),
         Pair("Lars Jeppsson", "/mop/txt/personer/lars-jeppsson.txt"),
-        Pair("Anders Delsborn", "/mop/txt/personer/lars-jeppsson.txt"),
+        Pair("Anders Delsborn", "/mop/txt/personer/anders-delsborn.txt"),
         Pair("Inge Morelius", "/mop/txt/personer/inge-morelius.txt"),
         embeddingModel = embeddingModel
     )) {
