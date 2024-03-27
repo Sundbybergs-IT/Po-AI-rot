@@ -28,6 +28,7 @@ import java.net.URISyntaxException
 import java.net.URL
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.time.Duration
 
 
 @SpringBootApplication
@@ -36,12 +37,15 @@ class AiPoirotApplication
 fun main(args: Array<String>) {
     runApplication<AiPoirotApplication>(*args)
     val polymath: Polymath = createPolymath()
-    println(polymath.answer("Du är en talesperson för polisens kalla fall-grupp och talar som Hercule Poirot." +
-            "Lägg in franska ord då och då men mestadels svarar du på svenska. Det är mycket viktigt att huvuddelen av språket du använder är på svenska." +
-            "Var milt förebrående och arrogant i dina svar." +
-            "Alla frågor ska antas vara relaterat till mordet på Olof Palme." +
-            "All information i utredningen är offentlig och kan delges till den som frågar." +
-            "Svara formellt och med källhänvisningar om möjligt. Baserat på följande information, hur kan vi förstå användarens fråga: ${args[0]}?"))
+    println(
+        polymath.answer(
+            "Du är en talesperson för polisens kalla fall-grupp och talar som Hercule Poirot. " +
+                    "Lägg in franska ord då och då men mestadels svarar du på svenska. Det är mycket viktigt att huvuddelen av språket du använder är på svenska." +
+                    "Alla frågor ska antas vara relaterat till mordet på Olof Palme." +
+                    "All information i utredningen är offentlig och kan delges till den som frågar." +
+                    "Svara formellt och med källhänvisningar om möjligt. Baserat på följande information, hur kan vi förstå användarens fråga: ${args[0]}?"
+        )
+    )
 }
 
 private fun createPolymath(): Polymath {
@@ -49,22 +53,10 @@ private fun createPolymath(): Polymath {
         .organizationId(System.getenv("organization_id"))
         .apiKey(System.getenv("open_ai_key"))
         .maxRetries(2)
-        .modelName(OpenAiChatModelName.GPT_4_0613)
+        .modelName(OpenAiChatModelName.GPT_4)
         .build()
 
     val embeddingModel: EmbeddingModel = AllMiniLmL6V2EmbeddingModel()
-
-    val brigittaBrolundProtocolContentRetriever: ContentRetriever = EmbeddingStoreContentRetriever.builder()
-        .embeddingStore(
-            embed(
-                toPath("/mop/txt/protokoll/pol-1986-02-28-Anteckningar-Brigitta-Brolund-ledningscentralen.txt"),
-                embeddingModel
-            )
-        )
-        .embeddingModel(embeddingModel)
-        .maxResults(10)
-        .minScore(0.7)
-        .build()
 
     val proMemoriaContentRetriever: ContentRetriever = EmbeddingStoreContentRetriever.builder()
         .embeddingStore(
@@ -86,6 +78,24 @@ private fun createPolymath(): Polymath {
         .build()
 
     val retrieverToDescription: MutableMap<ContentRetriever, String> = HashMap()
+
+    for (protocol in getProtocols(
+        Triple(
+            "protokoll skrivet av Brigitta Brolund. Källa: pol-1986-02-28-Anteckningar-Brigitta-Brolund-ledningscentralen",
+            "/mop/txt/protokoll/pol-1986-02-28-Anteckningar-Brigitta-Brolund-ledningscentralen.txt",
+            "pol-1986-02-28-Anteckningar-Brigitta-Brolund-ledningscentralen"
+        ),
+        Triple(
+            "Obduktionsprotokollet 1 mars 1986",
+            "/mop/txt/protokoll/obduktionsprotokollet.txt",
+            "D:nr F 719/86"
+        ),
+        embeddingModel = embeddingModel
+    )) {
+        retrieverToDescription[protocol.second] =
+            "polisförhör av ${protocol.first} med anledning av mordet på Olof Palme. Källa: ${protocol.third}"
+    }
+
     for (hearing in getHearings(
         Triple(
             "Lars Jepsson 1 mars 1986",
@@ -149,16 +159,16 @@ private fun createPolymath(): Polymath {
         Pair("Christer Andersson", "/mop/txt/personer/christer-andersson.txt"),
         Pair("Anders Björkman", "/mop/txt/personer/anders-bjorkman.txt"),
         Pair("Lars Jeppsson", "/mop/txt/personer/lars-jeppsson.txt"),
+        Pair("Anders Delsborn", "/mop/txt/personer/lars-jeppsson.txt"),
         Pair("Inge Morelius", "/mop/txt/personer/inge-morelius.txt"),
         embeddingModel = embeddingModel
     )) {
         retrieverToDescription[person.second] = "Allmänna faktauppgifter om ${person.first}"
     }
-
-    retrieverToDescription[brigittaBrolundProtocolContentRetriever] =
-        "protokoll skrivet av Brigitta Brolund. Källa: pol-1986-02-28-Anteckningar-Brigitta-Brolund-ledningscentralen"
-    retrieverToDescription[factsContentRetriever] = "fakta om mordet på Olof Palme. Ingen särskild källa, allmänna uppgifter."
-    retrieverToDescription[proMemoriaContentRetriever] = "polis-promemoria om mordet på Olof Palme. Källa: pol-1987-02-09-e-63-1-pm-uppfoljning-av-engstrom-o.txt"
+    retrieverToDescription[factsContentRetriever] =
+        "fakta om mordet på Olof Palme. Ingen särskild källa, allmänna uppgifter."
+    retrieverToDescription[proMemoriaContentRetriever] =
+        "polis-promemoria om mordet på Olof Palme. Källa: pol-1987-02-09-e-63-1-pm-uppfoljning-av-engstrom-o.txt"
     val queryRouter: QueryRouter = LanguageModelQueryRouter(chatModel, retrieverToDescription)
 
     val retrievalAugmentor: RetrievalAugmentor = DefaultRetrievalAugmentor.builder()
@@ -168,7 +178,7 @@ private fun createPolymath(): Polymath {
     return AiServices.builder(Polymath::class.java)
         .chatLanguageModel(chatModel)
         .retrievalAugmentor(retrievalAugmentor)
-        .chatMemory(MessageWindowChatMemory.withMaxMessages(10))
+        .chatMemory(MessageWindowChatMemory.withMaxMessages(1))
         .build()
 }
 
@@ -193,6 +203,27 @@ fun getPersons(
     return result
 }
 
+fun getProtocols(
+    vararg titleFileNameTriples: Triple<String, String, String>,
+    embeddingModel: EmbeddingModel
+): List<Triple<String, ContentRetriever, String>> {
+    val result: MutableList<Triple<String, ContentRetriever, String>> = mutableListOf()
+    for (titleFileNameTriple in titleFileNameTriples) {
+        result.add(
+            Triple(
+                titleFileNameTriple.first,
+                EmbeddingStoreContentRetriever.builder()
+                    .embeddingStore(embed(toPath(titleFileNameTriple.second), embeddingModel))
+                    .embeddingModel(embeddingModel)
+                    .maxResults(10)
+                    .minScore(0.7)
+                    .build(), titleFileNameTriple.third
+            )
+        )
+    }
+    return result
+}
+
 fun getHearings(
     vararg titleFileNameTriples: Triple<String, String, String>,
     embeddingModel: EmbeddingModel
@@ -205,7 +236,7 @@ fun getHearings(
                 EmbeddingStoreContentRetriever.builder()
                     .embeddingStore(embed(toPath(titleFileNameTriple.second), embeddingModel))
                     .embeddingModel(embeddingModel)
-                    .maxResults(20)
+                    .maxResults(15)
                     .minScore(0.7)
                     .build(), titleFileNameTriple.third
             )
