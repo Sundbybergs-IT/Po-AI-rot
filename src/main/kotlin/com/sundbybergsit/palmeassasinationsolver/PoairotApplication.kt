@@ -31,10 +31,10 @@ import java.nio.file.Paths
 
 
 @SpringBootApplication
-class AiPoirotApplication
+class PoairotApplication
 
 fun main(args: Array<String>) {
-    runApplication<AiPoirotApplication>(*args)
+    runApplication<PoairotApplication>(*args)
     val polymath: Polymath = createPolymath()
     println(
         polymath.answer(
@@ -261,7 +261,7 @@ private fun embed(documentPath: Path, embeddingModel: EmbeddingModel): Embedding
 
 private fun toPath(fileName: String): Path {
     try {
-        val fileUrl: URL = AiPoirotApplication::class.java.getResource(fileName)!!
+        val fileUrl: URL = PoairotApplication::class.java.getResource(fileName)!!
         return Paths.get(fileUrl.toURI())
     } catch (e: URISyntaxException) {
         throw RuntimeException(e)
@@ -269,6 +269,7 @@ private fun toPath(fileName: String): Path {
 }
 
 internal interface Polymath {
+
     fun answer(query: String?): String?
 
 }
