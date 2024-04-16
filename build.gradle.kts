@@ -2,8 +2,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
 	// Requires JDK 17
-	id("org.springframework.boot") version "3.2.2"
-	id("io.spring.dependency-management") version "1.1.4"
+	alias(libs.plugins.spring.boot) apply true
+	alias(libs.plugins.spring.dependencymanagement) apply true
 	kotlin("jvm") version "1.9.22"
 	kotlin("plugin.spring") version "1.9.22"
 }
@@ -23,10 +23,10 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 
-	api("dev.langchain4j:langchain4j:0.30.0")
-	implementation("dev.langchain4j:langchain4j-open-ai-spring-boot-starter:0.30.0")
-	implementation("dev.langchain4j:langchain4j-embeddings-all-minilm-l6-v2:0.30.0")
-	implementation("dev.langchain4j:langchain4j-weaviate:0.30.0")
+	api(libs.langchain4j)
+	implementation(libs.langchain4j.open.ai.spring.boot.starter)
+	implementation(libs.langchain4j.embeddings.all.minilm.l6.v2)
+	implementation(libs.langchain4j.weaviate)
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }

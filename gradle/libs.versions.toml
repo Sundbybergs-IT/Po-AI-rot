@@ -1,0 +1,15 @@
+[versions]
+langchain4j = "0.30.0"
+springBoot = "3.2.2"
+springDependencyManagement = "1.1.4"
+
+[libraries]
+langchain4j = { module = "dev.langchain4j:langchain4j", version.ref = "langchain4j" }
+langchain4j-open-ai-spring-boot-starter = { module = "dev.langchain4j:langchain4j-open-ai-spring-boot-starter", version.ref = "langchain4j" }
+langchain4j-embeddings-all-minilm-l6-v2 = { module = "dev.langchain4j:langchain4j-embeddings-all-minilm-l6-v2", version.ref = "langchain4j" }
+langchain4j-weaviate = { module = "dev.langchain4j:langchain4j-weaviate", version.ref = "langchain4j" }
+
+[plugins]
+spring-dependencymanagement = { id = "io.spring.dependency-management", version.ref = "springDependencyManagement" }
+spring-boot = { id = "org.springframework.boot", version.ref = "springBoot" }
+
