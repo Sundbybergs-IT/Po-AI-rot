@@ -1,7 +1,7 @@
 # Read Me First
 The following was discovered as part of building this project:
 
-* The original package name 'com.sundbybergsit.palme-assasination-solver' is invalid and this project uses 'com.sundbybergsit.palmeassasinationsolver' instead.
+* The original package name 'com.sundbybergsit.palme-assasination-solver' is invalid and this project uses 'com.sundbybergsit.poairot' instead.
 
 # Getting Started
 

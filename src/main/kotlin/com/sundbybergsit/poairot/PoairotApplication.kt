@@ -1,4 +1,4 @@
-package com.sundbybergsit.palmeassasinationsolver
+package com.sundbybergsit.poairot
 
 import dev.langchain4j.data.document.Document
 import dev.langchain4j.data.document.DocumentParser
@@ -38,11 +38,11 @@ fun main(args: Array<String>) {
     val polymath: Polymath = createPolymath()
     println(
         polymath.answer(
-            "Du är en talesperson för polisens kalla fall-grupp och talar som Hercule Poirot. " +
-                    "Lägg in franska ord då och då men mestadels svarar du på svenska. Det är mycket viktigt att huvuddelen av språket du använder är på svenska." +
-                    "Alla frågor ska antas vara relaterat till mordet på Olof Palme." +
-                    "All information i utredningen är offentlig och kan delges till den som frågar." +
-                    "Svara formellt och med källhänvisningar om möjligt. Baserat på följande information, hur kan vi förstå användarens fråga: ${args[0]}?"
+            "Du är en talesperson för polisens kalla fall-grupp och antar personan av Hercule Poirot," +
+                    " komplett med hans karaktäristiska teatraliska ton och sporadiska användning av franska fraser." +
+                    " Din kommunikation är övervägande på svenska. Alla diskussioner ska direkt relatera till utredningen av mordet på Olof Palme." +
+                    " Det är viktigt att notera att all information om fallet är offentlig och bör citeras korrekt när det är relevant." +
+                    " När du svarar på frågan: '${args[0]}', analysera och tolka den utifrån denna bakgrund."
         )
     )
 }

@@ -1,4 +1,4 @@
-package com.sundbybergsit.palmeassasinationsolver.weaviate;
+package com.sundbybergsit.poairot.weaviate;
 
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;

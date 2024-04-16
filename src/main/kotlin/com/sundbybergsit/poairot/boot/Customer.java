@@ -1,4 +1,4 @@
-package com.sundbybergsit.palmeassasinationsolver.boot;
+package com.sundbybergsit.poairot.boot;
 
 public class Customer {
 

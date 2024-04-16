@@ -1,4 +1,4 @@
-package com.sundbybergsit.palmeassasinationsolver.boot;
+package com.sundbybergsit.poairot.boot;
 
 import dev.langchain4j.agent.tool.Tool;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package com.sundbybergsit.palmeassasinationsolver.boot;
+package com.sundbybergsit.poairot.boot;
 
 import dev.langchain4j.data.document.Document;
 import dev.langchain4j.data.document.DocumentSplitter;
