@@ -203,10 +203,18 @@ private fun createPolymath(
     )) {
         retrieverToDescription[person.second] = "Allmänna faktauppgifter om ${person.first}"
     }
+
+    for (proMemoria in getProMemorias(
+        Pair("Uppföljning av Engström", "/mop/txt/pm/pol-1987-02-09-e-63-1-pm-uppfoljning-av-engstrom-o.txt"),
+        Pair("Första observation av buss 43", "/mop/txt/pm/pol-1986-03-03-EAE-340.txt"),
+        embeddingModel = embeddingModel,
+        weaviateEmbeddingStore = weaviateEmbeddingStore
+    )) {
+        retrieverToDescription[proMemoria.second] = "polis-promemoria om mordet på Olof Palme. ${proMemoria.first}"
+    }
+
     retrieverToDescription[factsContentRetriever] =
         "fakta om mordet på Olof Palme. Ingen särskild källa, allmänna uppgifter."
-    retrieverToDescription[proMemoriaContentRetriever] =
-        "polis-promemoria om mordet på Olof Palme. Källa: pol-1987-02-09-e-63-1-pm-uppfoljning-av-engstrom-o.txt"
     val queryRouter: QueryRouter = LanguageModelQueryRouter(chatModel, retrieverToDescription)
 
     val retrievalAugmentor: RetrievalAugmentor = DefaultRetrievalAugmentor.builder()
@@ -228,6 +236,28 @@ private fun proMemoriaEmbeddingStore(
     embeddingModel,
     weaviateEmbeddingStore
 )
+
+fun getProMemorias(
+    vararg titleFileNamePairs: Pair<String, String>,
+    embeddingModel: EmbeddingModel,
+    weaviateEmbeddingStore: WeaviateEmbeddingStore,
+): List<Pair<String, ContentRetriever>> {
+    val result: MutableList<Pair<String, ContentRetriever>> = mutableListOf()
+    for (titleFileNamePair in titleFileNamePairs) {
+        result.add(
+            Pair(
+                titleFileNamePair.first,
+                EmbeddingStoreContentRetriever.builder()
+                    .embeddingStore(embed(toPath(titleFileNamePair.second), embeddingModel, weaviateEmbeddingStore))
+                    .embeddingModel(embeddingModel)
+                    .maxResults(25)
+                    .minScore(0.6)
+                    .build()
+            )
+        )
+    }
+    return result
+}
 
 fun getPersons(
     vararg titleFileNamePairs: Pair<String, String>,
