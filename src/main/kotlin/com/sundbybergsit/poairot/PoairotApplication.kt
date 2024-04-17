@@ -21,13 +21,15 @@ import dev.langchain4j.rag.query.router.LanguageModelQueryRouter
 import dev.langchain4j.rag.query.router.QueryRouter
 import dev.langchain4j.service.AiServices
 import dev.langchain4j.store.embedding.EmbeddingStore
-import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore
+import dev.langchain4j.store.embedding.weaviate.WeaviateEmbeddingStore
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import java.net.URISyntaxException
 import java.net.URL
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.*
+import kotlin.collections.HashMap
 
 
 @SpringBootApplication
@@ -35,7 +37,13 @@ class PoairotApplication
 
 fun main(args: Array<String>) {
     runApplication<PoairotApplication>(*args)
-    val polymath: Polymath = createPolymath()
+    val envProperties = checkNotNull(loadProperties())
+    val polymath: Polymath = createPolymath(
+        envProperties.getProperty("organization_id"),
+        envProperties.getProperty("openai_api_key"),
+        envProperties.getProperty("weaviate_api_key"),
+        envProperties.getProperty("weaviate_url")
+    )
     println(
         polymath.answer(
             "Du är en talesperson för polisens kalla fall-grupp och antar personan av Hercule Poirot," +
@@ -47,30 +55,50 @@ fun main(args: Array<String>) {
     )
 }
 
-private fun createPolymath(): Polymath {
+fun loadProperties(): Properties? {
+    val prop = Properties()
+    val classLoader = Thread.currentThread().contextClassLoader
+    classLoader.getResourceAsStream("env.properties").use { input ->
+        if (input == null) {
+            println("Sorry, unable to find env.properties")
+            return null
+        }
+
+        prop.load(input)
+        return prop
+    }
+}
+
+private fun createPolymath(
+    organizationId: String,
+    openAiApiKey: String,
+    weaviateApiKey: String,
+    weaviateUrl: String,
+): Polymath {
     val chatModel: ChatLanguageModel = OpenAiChatModel.builder()
-        .organizationId(System.getenv("organization_id"))
-        .apiKey(System.getenv("open_ai_key"))
+        .organizationId(organizationId)
+        .apiKey(openAiApiKey)
         .maxRetries(2)
         .modelName(OpenAiChatModelName.GPT_4)
         .build()
 
     val embeddingModel: EmbeddingModel = AllMiniLmL6V2EmbeddingModel()
 
+    val weaviateEmbeddingStore = WeaviateEmbeddingStore.builder()
+        .apiKey(weaviateApiKey)
+        .scheme("https")
+        .host(weaviateUrl)
+        .build()
+
     val proMemoriaContentRetriever: ContentRetriever = EmbeddingStoreContentRetriever.builder()
-        .embeddingStore(
-            embed(
-                toPath("/mop/txt/pm/pol-1987-02-09-e-63-1-pm-uppfoljning-av-engstrom-o.txt"),
-                embeddingModel
-            )
-        )
+        .embeddingStore(proMemoriaEmbeddingStore(embeddingModel, weaviateEmbeddingStore))
         .embeddingModel(embeddingModel)
         .maxResults(10)
         .minScore(0.7)
         .build()
 
     val factsContentRetriever: ContentRetriever = EmbeddingStoreContentRetriever.builder()
-        .embeddingStore(embed(toPath("/mop/txt/facts.txt"), embeddingModel))
+        .embeddingStore(embed(toPath("/mop/txt/facts.txt"), embeddingModel, weaviateEmbeddingStore))
         .embeddingModel(embeddingModel)
         .maxResults(5)
         .minScore(0.6)
@@ -89,7 +117,8 @@ private fun createPolymath(): Polymath {
             "/mop/txt/protokoll/obduktionsprotokollet.txt",
             "D:nr F 719/86"
         ),
-        embeddingModel = embeddingModel
+        embeddingModel = embeddingModel,
+        weaviateEmbeddingStore = weaviateEmbeddingStore
     )) {
         retrieverToDescription[protocol.second] =
             "polisförhör av ${protocol.first} med anledning av mordet på Olof Palme. Källa: ${protocol.third}"
@@ -146,7 +175,8 @@ private fun createPolymath(): Polymath {
             "/mop/txt/forhor/Pol-1986-03-01_0920_E107-00_Förhör_med_Inge_Morelius.txt",
             "Pol-1986-03-01_0920_E107-00_Förhör_med_Inge_Morelius"
         ),
-        embeddingModel = embeddingModel
+        embeddingModel = embeddingModel,
+        weaviateEmbeddingStore = weaviateEmbeddingStore
     )) {
         retrieverToDescription[hearing.second] =
             "polisförhör av ${hearing.first} med anledning av mordet på Olof Palme. Källa: ${hearing.third}"
@@ -161,7 +191,8 @@ private fun createPolymath(): Polymath {
         Pair("Anders Delsborn", "/mop/txt/personer/anders-delsborn.txt"),
         Pair("Inge Morelius", "/mop/txt/personer/inge-morelius.txt"),
         Pair("Olof Palme", "/mop/txt/personer/olof-palme.txt"),
-        embeddingModel = embeddingModel
+        embeddingModel = embeddingModel,
+        weaviateEmbeddingStore = weaviateEmbeddingStore
     )) {
         retrieverToDescription[person.second] = "Allmänna faktauppgifter om ${person.first}"
     }
@@ -182,9 +213,19 @@ private fun createPolymath(): Polymath {
         .build()
 }
 
+private fun proMemoriaEmbeddingStore(
+    embeddingModel: EmbeddingModel,
+    weaviateEmbeddingStore: WeaviateEmbeddingStore,
+) = embed(
+    toPath("/mop/txt/pm/pol-1987-02-09-e-63-1-pm-uppfoljning-av-engstrom-o.txt"),
+    embeddingModel,
+    weaviateEmbeddingStore
+)
+
 fun getPersons(
     vararg titleFileNamePairs: Pair<String, String>,
-    embeddingModel: EmbeddingModel
+    embeddingModel: EmbeddingModel,
+    weaviateEmbeddingStore: WeaviateEmbeddingStore,
 ): List<Pair<String, ContentRetriever>> {
     val result: MutableList<Pair<String, ContentRetriever>> = mutableListOf()
     for (titleFileNamePair in titleFileNamePairs) {
@@ -192,7 +233,7 @@ fun getPersons(
             Pair(
                 titleFileNamePair.first,
                 EmbeddingStoreContentRetriever.builder()
-                    .embeddingStore(embed(toPath(titleFileNamePair.second), embeddingModel))
+                    .embeddingStore(embed(toPath(titleFileNamePair.second), embeddingModel, weaviateEmbeddingStore))
                     .embeddingModel(embeddingModel)
                     .maxResults(5)
                     .minScore(0.6)
@@ -205,15 +246,17 @@ fun getPersons(
 
 fun getProtocols(
     vararg titleFileNameTriples: Triple<String, String, String>,
-    embeddingModel: EmbeddingModel
+    embeddingModel: EmbeddingModel,
+    weaviateEmbeddingStore: WeaviateEmbeddingStore,
 ): List<Triple<String, ContentRetriever, String>> {
     val result: MutableList<Triple<String, ContentRetriever, String>> = mutableListOf()
     for (titleFileNameTriple in titleFileNameTriples) {
+        val protocolEmbeddingStore = embed(toPath(titleFileNameTriple.second), embeddingModel, weaviateEmbeddingStore)
         result.add(
             Triple(
                 titleFileNameTriple.first,
                 EmbeddingStoreContentRetriever.builder()
-                    .embeddingStore(embed(toPath(titleFileNameTriple.second), embeddingModel))
+                    .embeddingStore(protocolEmbeddingStore)
                     .embeddingModel(embeddingModel)
                     .maxResults(10)
                     .minScore(0.7)
@@ -226,15 +269,17 @@ fun getProtocols(
 
 fun getHearings(
     vararg titleFileNameTriples: Triple<String, String, String>,
-    embeddingModel: EmbeddingModel
+    embeddingModel: EmbeddingModel,
+    weaviateEmbeddingStore: WeaviateEmbeddingStore,
 ): List<Triple<String, ContentRetriever, String>> {
     val result: MutableList<Triple<String, ContentRetriever, String>> = mutableListOf()
     for (titleFileNameTriple in titleFileNameTriples) {
+        val hearingEmbeddingStore = embed(toPath(titleFileNameTriple.second), embeddingModel, weaviateEmbeddingStore)
         result.add(
             Triple(
                 titleFileNameTriple.first,
                 EmbeddingStoreContentRetriever.builder()
-                    .embeddingStore(embed(toPath(titleFileNameTriple.second), embeddingModel))
+                    .embeddingStore(hearingEmbeddingStore)
                     .embeddingModel(embeddingModel)
                     .maxResults(15)
                     .minScore(0.7)
@@ -245,16 +290,16 @@ fun getHearings(
     return result
 }
 
-private fun embed(documentPath: Path, embeddingModel: EmbeddingModel): EmbeddingStore<TextSegment> {
+private fun embed(
+    documentPath: Path,
+    embeddingModel: EmbeddingModel,
+    embeddingStore: EmbeddingStore<TextSegment>
+): EmbeddingStore<TextSegment> {
     val documentParser: DocumentParser = TextDocumentParser()
     val document: Document = FileSystemDocumentLoader.loadDocument(documentPath, documentParser)
-
     val splitter = DocumentSplitters.recursive(300, 0)
     val segments = splitter.split(document)
-
     val embeddings: List<Embedding> = embeddingModel.embedAll(segments).content()
-
-    val embeddingStore: EmbeddingStore<TextSegment> = InMemoryEmbeddingStore()
     embeddingStore.addAll(embeddings, segments)
     return embeddingStore
 }
