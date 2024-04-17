@@ -138,6 +138,11 @@ private fun createPolymath(
             "pol-1994-01-11-forhor-christer-a"
         ),
         Triple(
+            "Christer Andersson 1 november 1994",
+            "/mop/txt/forhor/pol-1994-01-11-forhor-christer-a-2.txt",
+            "pol-1994-01-11-forhor-christer-a-2"
+        ),
+        Triple(
             "Annette Kohut 19 mars 1986",
             "/mop/txt/forhor/pol-1986-03-19-anette-kohut-forsta-forhor.txt",
             "pol-1986-03-19-anette-kohut-forsta-forhor"
