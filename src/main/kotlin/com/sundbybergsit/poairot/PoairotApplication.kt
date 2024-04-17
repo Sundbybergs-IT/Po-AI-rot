@@ -46,11 +46,13 @@ fun main(args: Array<String>) {
     )
     println(
         polymath.answer(
-            "Du är en talesperson för polisens kalla fall-grupp och antar personan av Hercule Poirot," +
-                    " komplett med hans karaktäristiska teatraliska ton och sporadiska användning av franska fraser." +
-                    " Din kommunikation är övervägande på svenska. Alla diskussioner ska direkt relatera till utredningen av mordet på Olof Palme." +
-                    " Det är viktigt att notera att all information om fallet är offentlig och bör citeras korrekt när det är relevant." +
-                    " När du svarar på frågan: '${args[0]}', analysera och tolka den utifrån denna bakgrund."
+            "Du är talesperson för polisens kalla fall-grupp och antar personan av Hercule Poirot, " +
+                    "känd för sitt detaljerade och noggranna detektivarbete. " +
+                    "Du använder en teatralisk ton liknande Poirots, men ditt språk är övervägande svenska. " +
+                    "Du kan inkludera några sporadiska franska fraser för att förstärka karaktären, " +
+                    "men huvuddelen av kommunikationen och all teknisk information om utredningen av mordet på Olof Palme ska vara på svenska. " +
+                    "Kom ihåg att all information om fallet är offentlig och ska hanteras korrekt. När du svarar på frågan: '${args[0]}', " +
+                    "analysera och tolka den med fokus på detta mordfall och använd relevanta detaljer och fakta för att ge ett trovärdigt och informativt svar."
         )
     )
 }
@@ -70,13 +72,13 @@ fun loadProperties(): Properties? {
 }
 
 private fun createPolymath(
-    organizationId: String,
+    openAiOrganizationId: String,
     openAiApiKey: String,
     weaviateApiKey: String,
     weaviateUrl: String,
 ): Polymath {
     val chatModel: ChatLanguageModel = OpenAiChatModel.builder()
-        .organizationId(organizationId)
+        .organizationId(openAiOrganizationId)
         .apiKey(openAiApiKey)
         .maxRetries(2)
         .modelName(OpenAiChatModelName.GPT_4)
@@ -93,14 +95,14 @@ private fun createPolymath(
     val proMemoriaContentRetriever: ContentRetriever = EmbeddingStoreContentRetriever.builder()
         .embeddingStore(proMemoriaEmbeddingStore(embeddingModel, weaviateEmbeddingStore))
         .embeddingModel(embeddingModel)
-        .maxResults(10)
+        .maxResults(30)
         .minScore(0.7)
         .build()
 
     val factsContentRetriever: ContentRetriever = EmbeddingStoreContentRetriever.builder()
         .embeddingStore(embed(toPath("/mop/txt/facts.txt"), embeddingModel, weaviateEmbeddingStore))
         .embeddingModel(embeddingModel)
-        .maxResults(5)
+        .maxResults(10)
         .minScore(0.6)
         .build()
 
@@ -235,7 +237,7 @@ fun getPersons(
                 EmbeddingStoreContentRetriever.builder()
                     .embeddingStore(embed(toPath(titleFileNamePair.second), embeddingModel, weaviateEmbeddingStore))
                     .embeddingModel(embeddingModel)
-                    .maxResults(5)
+                    .maxResults(25)
                     .minScore(0.6)
                     .build()
             )
@@ -258,7 +260,7 @@ fun getProtocols(
                 EmbeddingStoreContentRetriever.builder()
                     .embeddingStore(protocolEmbeddingStore)
                     .embeddingModel(embeddingModel)
-                    .maxResults(10)
+                    .maxResults(40)
                     .minScore(0.7)
                     .build(), titleFileNameTriple.third
             )
@@ -281,7 +283,7 @@ fun getHearings(
                 EmbeddingStoreContentRetriever.builder()
                     .embeddingStore(hearingEmbeddingStore)
                     .embeddingModel(embeddingModel)
-                    .maxResults(15)
+                    .maxResults(30)
                     .minScore(0.7)
                     .build(), titleFileNameTriple.third
             )
