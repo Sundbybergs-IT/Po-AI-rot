@@ -195,6 +195,7 @@ private fun createPolymath(
         Pair("Christer Andersson", "/mop/txt/personer/christer-andersson.txt"),
         Pair("Anders Björkman", "/mop/txt/personer/anders-bjorkman.txt"),
         Pair("Lars Jeppsson", "/mop/txt/personer/lars-jeppsson.txt"),
+        Pair("Lars Krantz", "/mop/txt/personer/lars-krantz.txt"),
         Pair("Anders Delsborn", "/mop/txt/personer/anders-delsborn.txt"),
         Pair("Inge Morelius", "/mop/txt/personer/inge-morelius.txt"),
         Pair("Olof Palme", "/mop/txt/personer/olof-palme.txt"),
@@ -207,6 +208,7 @@ private fun createPolymath(
     for (proMemoria in getProMemorias(
         Pair("Uppföljning av Engström", "/mop/txt/pm/pol-1987-02-09-e-63-1-pm-uppfoljning-av-engstrom-o.txt"),
         Pair("Första observation av buss 43", "/mop/txt/pm/pol-1986-03-03-EAE-340.txt"),
+        Pair("Lars Krantz känner igen mannen på buss 43", "/mop/txt/pm/pol-1986-03-03-EAE-340-B.txt"),
         embeddingModel = embeddingModel,
         weaviateEmbeddingStore = weaviateEmbeddingStore
     )) {
