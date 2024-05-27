@@ -92,23 +92,23 @@ private fun createPolymath(
         .host(weaviateUrl)
         .build()
 
-    val proMemoriaContentRetriever: ContentRetriever = EmbeddingStoreContentRetriever.builder()
-        .embeddingStore(proMemoriaEmbeddingStore(embeddingModel, weaviateEmbeddingStore))
-        .embeddingModel(embeddingModel)
-        .maxResults(30)
-        .minScore(0.7)
-        .build()
-
-    val factsContentRetriever: ContentRetriever = EmbeddingStoreContentRetriever.builder()
-        .embeddingStore(embed(toPath("/mop/txt/facts.txt"), embeddingModel, weaviateEmbeddingStore))
-        .embeddingModel(embeddingModel)
-        .maxResults(10)
-        .minScore(0.6)
-        .build()
-
     val retrieverToDescription: MutableMap<ContentRetriever, String> = HashMap()
 
-    for (protocol in getProtocols(
+    for (kommission in getAll(
+        Triple(
+            "Granskningskommissionens betänkande i anledning av Brottsutredningen efter mordet på statsminister Olof Palme",
+            "/mop/txt/kommission/grk.txt",
+            "https://www.regeringen.se/rattsliga-dokument/statens-offentliga-utredningar/1999/01/sou-199988--/"
+        ),
+        embeddingModel = embeddingModel,
+        weaviateEmbeddingStore = weaviateEmbeddingStore,
+        maxResults = 5,
+        minScore = 0.7,
+    )) {
+        retrieverToDescription[kommission.second] = "${kommission.first}. Källa: ${kommission.third}"
+    }
+
+    for (protocol in getAll(
         Triple(
             "protokoll skrivet av Brigitta Brolund. Källa: pol-1986-02-28-Anteckningar-Brigitta-Brolund-ledningscentralen",
             "/mop/txt/protokoll/pol-1986-02-28-Anteckningar-Brigitta-Brolund-ledningscentralen.txt",
@@ -120,13 +120,15 @@ private fun createPolymath(
             "D:nr F 719/86"
         ),
         embeddingModel = embeddingModel,
-        weaviateEmbeddingStore = weaviateEmbeddingStore
+        weaviateEmbeddingStore = weaviateEmbeddingStore,
+        maxResults = 20,
+        minScore = 0.7,
     )) {
         retrieverToDescription[protocol.second] =
             "polisförhör av ${protocol.first} med anledning av mordet på Olof Palme. Källa: ${protocol.third}"
     }
 
-    for (hearing in getHearings(
+    for (hearing in getAll(
         Triple(
             "Lars Jepsson 1 mars 1986",
             "/mop/txt/forhor/pol-E15-00-Lars-Jeppsson-1986-03-01.txt",
@@ -183,40 +185,63 @@ private fun createPolymath(
             "Pol-1986-03-01_0920_E107-00_Förhör_med_Inge_Morelius"
         ),
         embeddingModel = embeddingModel,
-        weaviateEmbeddingStore = weaviateEmbeddingStore
+        weaviateEmbeddingStore = weaviateEmbeddingStore,
+        maxResults = 30,
+        minScore = 0.7,
     )) {
         retrieverToDescription[hearing.second] =
             "polisförhör av ${hearing.first} med anledning av mordet på Olof Palme. Källa: ${hearing.third}"
     }
 
-    for (person in getPersons(
-        Pair("mördaren", "/mop/txt/personer/mordaren.txt"),
-        Pair("Christer Pettersson", "/mop/txt/personer/christer-pettersson.txt"),
-        Pair("Christer Andersson", "/mop/txt/personer/christer-andersson.txt"),
-        Pair("Anders Björkman", "/mop/txt/personer/anders-bjorkman.txt"),
-        Pair("Lars Jeppsson", "/mop/txt/personer/lars-jeppsson.txt"),
-        Pair("Lars Krantz", "/mop/txt/personer/lars-krantz.txt"),
-        Pair("Anders Delsborn", "/mop/txt/personer/anders-delsborn.txt"),
-        Pair("Inge Morelius", "/mop/txt/personer/inge-morelius.txt"),
-        Pair("Olof Palme", "/mop/txt/personer/olof-palme.txt"),
+    for (person in getAll(
+        Triple("mördaren", "/mop/txt/personer/mordaren.txt", ""),
+        Triple("Christer Pettersson", "/mop/txt/personer/christer-pettersson.txt", ""),
+        Triple("Christer Andersson", "/mop/txt/personer/christer-andersson.txt", ""),
+        Triple("Anders Björkman", "/mop/txt/personer/anders-bjorkman.txt", ""),
+        Triple("Lars Jeppsson", "/mop/txt/personer/lars-jeppsson.txt", ""),
+        Triple("Lars Krantz", "/mop/txt/personer/lars-krantz.txt", ""),
+        Triple("Lisbeth Palme", "/mop/txt/personer/lisbeth-palme.txt", ""),
+        Triple("Anders Delsborn", "/mop/txt/personer/anders-delsborn.txt", ""),
+        Triple("Inge Morelius", "/mop/txt/personer/inge-morelius.txt", ""),
+        Triple("Olof Palme", "/mop/txt/personer/olof-palme.txt", ""),
         embeddingModel = embeddingModel,
-        weaviateEmbeddingStore = weaviateEmbeddingStore
+        weaviateEmbeddingStore = weaviateEmbeddingStore,
+        maxResults = 25,
+        minScore = 0.6,
     )) {
         retrieverToDescription[person.second] = "Allmänna faktauppgifter om ${person.first}"
     }
 
-    for (proMemoria in getProMemorias(
-        Pair("Uppföljning av Engström", "/mop/txt/pm/pol-1987-02-09-e-63-1-pm-uppfoljning-av-engstrom-o.txt"),
-        Pair("Första observation av buss 43", "/mop/txt/pm/pol-1986-03-03-EAE-340.txt"),
-        Pair("Lars Krantz känner igen mannen på buss 43", "/mop/txt/pm/pol-1986-03-03-EAE-340-B.txt"),
+    for (proMemoria in getAll(
+        Triple(
+            "Uppföljning av Engström",
+            "/mop/txt/pm/pol-1987-02-09-e-63-1-pm-uppfoljning-av-engstrom-o.txt",
+            "ol-1987-02-09-e-63-1"
+        ),
+        Triple("Första observation av buss 43", "/mop/txt/pm/pol-1986-03-03-EAE-340.txt", "pol-1986-03-03-EAE-340"),
+        Triple(
+            "Lars Krantz känner igen mannen på buss 43",
+            "/mop/txt/pm/pol-1986-03-03-EAE-340-B.txt",
+            "pol-1986-03-03-EAE-340-B"
+        ),
         embeddingModel = embeddingModel,
-        weaviateEmbeddingStore = weaviateEmbeddingStore
+        weaviateEmbeddingStore = weaviateEmbeddingStore,
+        maxResults = 25,
+        minScore = 0.6,
     )) {
         retrieverToDescription[proMemoria.second] = "polis-promemoria om mordet på Olof Palme. ${proMemoria.first}"
     }
 
-    retrieverToDescription[factsContentRetriever] =
-        "fakta om mordet på Olof Palme. Ingen särskild källa, allmänna uppgifter."
+    for (fact in getAll(
+        Triple("Fakta om mordet", "/mop/txt/facts.txt", "Ingen särskild källa, allmänna uppgifter"),
+        embeddingModel = embeddingModel,
+        weaviateEmbeddingStore = weaviateEmbeddingStore,
+        maxResults = 10,
+        minScore = 0.6,
+    )) {
+        retrieverToDescription[fact.second] ="fakta om mordet på Olof Palme. ${fact.first}"
+    }
+
     val queryRouter: QueryRouter = LanguageModelQueryRouter(chatModel, retrieverToDescription)
 
     val retrievalAugmentor: RetrievalAugmentor = DefaultRetrievalAugmentor.builder()
@@ -230,99 +255,25 @@ private fun createPolymath(
         .build()
 }
 
-private fun proMemoriaEmbeddingStore(
-    embeddingModel: EmbeddingModel,
-    weaviateEmbeddingStore: WeaviateEmbeddingStore,
-) = embed(
-    toPath("/mop/txt/pm/pol-1987-02-09-e-63-1-pm-uppfoljning-av-engstrom-o.txt"),
-    embeddingModel,
-    weaviateEmbeddingStore
-)
-
-fun getProMemorias(
-    vararg titleFileNamePairs: Pair<String, String>,
-    embeddingModel: EmbeddingModel,
-    weaviateEmbeddingStore: WeaviateEmbeddingStore,
-): List<Pair<String, ContentRetriever>> {
-    val result: MutableList<Pair<String, ContentRetriever>> = mutableListOf()
-    for (titleFileNamePair in titleFileNamePairs) {
-        result.add(
-            Pair(
-                titleFileNamePair.first,
-                EmbeddingStoreContentRetriever.builder()
-                    .embeddingStore(embed(toPath(titleFileNamePair.second), embeddingModel, weaviateEmbeddingStore))
-                    .embeddingModel(embeddingModel)
-                    .maxResults(25)
-                    .minScore(0.6)
-                    .build()
-            )
-        )
-    }
-    return result
-}
-
-fun getPersons(
-    vararg titleFileNamePairs: Pair<String, String>,
-    embeddingModel: EmbeddingModel,
-    weaviateEmbeddingStore: WeaviateEmbeddingStore,
-): List<Pair<String, ContentRetriever>> {
-    val result: MutableList<Pair<String, ContentRetriever>> = mutableListOf()
-    for (titleFileNamePair in titleFileNamePairs) {
-        result.add(
-            Pair(
-                titleFileNamePair.first,
-                EmbeddingStoreContentRetriever.builder()
-                    .embeddingStore(embed(toPath(titleFileNamePair.second), embeddingModel, weaviateEmbeddingStore))
-                    .embeddingModel(embeddingModel)
-                    .maxResults(25)
-                    .minScore(0.6)
-                    .build()
-            )
-        )
-    }
-    return result
-}
-
-fun getProtocols(
+fun getAll(
     vararg titleFileNameTriples: Triple<String, String, String>,
     embeddingModel: EmbeddingModel,
     weaviateEmbeddingStore: WeaviateEmbeddingStore,
+    maxResults: Int,
+    minScore: Double,
 ): List<Triple<String, ContentRetriever, String>> {
     val result: MutableList<Triple<String, ContentRetriever, String>> = mutableListOf()
     for (titleFileNameTriple in titleFileNameTriples) {
-        val protocolEmbeddingStore = embed(toPath(titleFileNameTriple.second), embeddingModel, weaviateEmbeddingStore)
         result.add(
             Triple(
                 titleFileNameTriple.first,
                 EmbeddingStoreContentRetriever.builder()
-                    .embeddingStore(protocolEmbeddingStore)
+                    .embeddingStore(embed(toPath(titleFileNameTriple.second), embeddingModel, weaviateEmbeddingStore))
                     .embeddingModel(embeddingModel)
-                    .maxResults(40)
-                    .minScore(0.7)
-                    .build(), titleFileNameTriple.third
-            )
-        )
-    }
-    return result
-}
-
-fun getHearings(
-    vararg titleFileNameTriples: Triple<String, String, String>,
-    embeddingModel: EmbeddingModel,
-    weaviateEmbeddingStore: WeaviateEmbeddingStore,
-): List<Triple<String, ContentRetriever, String>> {
-    val result: MutableList<Triple<String, ContentRetriever, String>> = mutableListOf()
-    for (titleFileNameTriple in titleFileNameTriples) {
-        val hearingEmbeddingStore = embed(toPath(titleFileNameTriple.second), embeddingModel, weaviateEmbeddingStore)
-        result.add(
-            Triple(
-                titleFileNameTriple.first,
-                EmbeddingStoreContentRetriever.builder()
-                    .embeddingStore(hearingEmbeddingStore)
-                    .embeddingModel(embeddingModel)
-                    .maxResults(30)
-                    .minScore(0.7)
-                    .build(), titleFileNameTriple.third
+                    .maxResults(maxResults)
+                    .minScore(minScore)
+                    .build(),
+                titleFileNameTriple.third
             )
         )
     }
