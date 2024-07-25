@@ -268,6 +268,7 @@ fun getAll(
             Triple(
                 titleFileNameTriple.first,
                 EmbeddingStoreContentRetriever.builder()
+                    .displayName("EmbStoreRetriever${titleFileNameTriple.first}")
                     .embeddingStore(embed(toPath(titleFileNameTriple.second), embeddingModel, weaviateEmbeddingStore))
                     .embeddingModel(embeddingModel)
                     .maxResults(maxResults)
