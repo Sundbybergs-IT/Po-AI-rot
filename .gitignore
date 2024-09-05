@@ -40,3 +40,5 @@ out/
 
 ### Gradle ###
 .gradle
+
+/src/main/resources/env.properties
