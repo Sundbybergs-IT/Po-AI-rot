@@ -1,5 +1,5 @@
 [versions]
-langchain4j = "0.33.0"
+langchain4j = "0.34.0"
 springBoot = "3.2.4"
 springDependencyManagement = "1.1.4"
 
