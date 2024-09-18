@@ -1,1 +1,1 @@
-rootProject.name = "palme-assasination-solver"
+rootProject.name = "Po-AI-rot"
