@@ -1,6 +1,7 @@
 [versions]
 langchain4j = "0.34.0"
-springBoot = "3.2.4"
+kotlin = "1.9.22"
+springBoot = "3.3.3"
 springDependencyManagement = "1.1.4"
 
 [libraries]
@@ -12,4 +13,5 @@ langchain4j-weaviate = { module = "dev.langchain4j:langchain4j-weaviate", versio
 [plugins]
 spring-dependencymanagement = { id = "io.spring.dependency-management", version.ref = "springDependencyManagement" }
 spring-boot = { id = "org.springframework.boot", version.ref = "springBoot" }
-
+kotlin-jvm = { id  = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-spring = { id  ="org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin" }

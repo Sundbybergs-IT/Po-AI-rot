@@ -4,8 +4,8 @@ plugins {
 	// Requires JDK 17
 	alias(libs.plugins.spring.boot) apply true
 	alias(libs.plugins.spring.dependencymanagement) apply true
-	kotlin("jvm") version "1.9.22"
-	kotlin("plugin.spring") version "1.9.22"
+	alias(libs.plugins.kotlin.jvm) apply true
+	alias(libs.plugins.kotlin.spring) apply true
 }
 
 group = "com.sundbybergsit"
