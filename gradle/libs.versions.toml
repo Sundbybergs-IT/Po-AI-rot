@@ -1,8 +1,8 @@
 [versions]
+kotlin = "2.0.20"
 langchain4j = "0.34.0"
-kotlin = "1.9.22"
-springBoot = "3.3.3"
-springDependencyManagement = "1.1.4"
+spring-boot = "3.3.3"
+spring-dependency-management = "1.1.6"
 
 [libraries]
 langchain4j = { module = "dev.langchain4j:langchain4j", version.ref = "langchain4j" }
@@ -11,7 +11,7 @@ langchain4j-embeddings-all-minilm-l6-v2 = { module = "dev.langchain4j:langchain4
 langchain4j-weaviate = { module = "dev.langchain4j:langchain4j-weaviate", version.ref = "langchain4j" }
 
 [plugins]
-spring-dependencymanagement = { id = "io.spring.dependency-management", version.ref = "springDependencyManagement" }
-spring-boot = { id = "org.springframework.boot", version.ref = "springBoot" }
+spring-dependencymanagement = { id = "io.spring.dependency-management", version.ref = "spring-dependency-management" }
+spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
 kotlin-jvm = { id  = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-spring = { id  ="org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin" }

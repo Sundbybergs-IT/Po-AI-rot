@@ -1,7 +1,4 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
-	// Requires JDK 17
 	alias(libs.plugins.spring.boot) apply true
 	alias(libs.plugins.spring.dependencymanagement) apply true
 	alias(libs.plugins.kotlin.jvm) apply true
@@ -12,7 +9,7 @@ group = "com.sundbybergsit"
 version = "0.0.1-SNAPSHOT"
 
 java {
-	sourceCompatibility = JavaVersion.VERSION_17
+	sourceCompatibility = JavaVersion.VERSION_21
 }
 
 repositories {
@@ -31,10 +28,9 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
-tasks.withType<KotlinCompile> {
-	kotlinOptions {
-		freeCompilerArgs += "-Xjsr305=strict"
-		jvmTarget = "17"
+tasks.named("compileKotlin", org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask::class.java) {
+	compilerOptions {
+		freeCompilerArgs.add("-Xjsr305=strict")
 	}
 }
 
