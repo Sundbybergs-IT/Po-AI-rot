@@ -195,6 +195,7 @@ private fun createPolymath(
 
     for (person in getAll(
         Triple("mördaren", "/mop/txt/personer/mordaren.txt", ""),
+        Triple("Carl Gustav Östling", "/mop/txt/personer/carl-gustav-östling.txt", ""),
         Triple("Christer Pettersson", "/mop/txt/personer/christer-pettersson.txt", ""),
         Triple("Christer Andersson", "/mop/txt/personer/christer-andersson.txt", ""),
         Triple("Anders Björkman", "/mop/txt/personer/anders-bjorkman.txt", ""),
