@@ -23,5 +23,5 @@ Use OpenAPI credentials and set the following in env.properties:
 - Setup credentials in env.properties by
 
 # Run the program
-- Main class: com.sundbybergsit.poairot.PoairotApplicationKt
+- Main class: [com.sundbybergsit.poairot.PoairotApplicationKt]
 - Program argument is sent as a String, example: "Who killed Olof Palme?"
