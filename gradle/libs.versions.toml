@@ -1,6 +1,6 @@
 [versions]
 kotlin = "2.0.20"
-langchain4j = "0.34.0"
+langchain4j = "0.35.0"
 spring-boot = "3.3.3"
 spring-dependency-management = "1.1.6"
 
