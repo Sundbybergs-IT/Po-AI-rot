@@ -93,12 +93,12 @@ private fun createPolymath(
         .build()
 
     val retrieverToDescription: MutableMap<ContentRetriever, String> = HashMap<ContentRetriever, String>().apply {
-        embedKommissions(embeddingModel, weaviateEmbeddingStore)
+        embedPersonsOfInterest(embeddingModel, weaviateEmbeddingStore)
+        embedFacts(embeddingModel, weaviateEmbeddingStore)
         embedProtocols(embeddingModel, weaviateEmbeddingStore)
         embedHearings(embeddingModel, weaviateEmbeddingStore)
-        embedPersons(embeddingModel, weaviateEmbeddingStore)
-        embedProMemoria(embeddingModel, weaviateEmbeddingStore)
-        embedFacts(embeddingModel, weaviateEmbeddingStore)
+        embedCommissions(embeddingModel, weaviateEmbeddingStore)
+        embedMemos(embeddingModel, weaviateEmbeddingStore)
     }
 
     val queryRouter: QueryRouter = LanguageModelQueryRouter(chatModel, retrieverToDescription)
@@ -114,7 +114,7 @@ private fun createPolymath(
         .build()
 }
 
-private fun MutableMap<ContentRetriever, String>.embedKommissions(
+private fun MutableMap<ContentRetriever, String>.embedCommissions(
     embeddingModel: EmbeddingModel,
     weaviateEmbeddingStore: WeaviateEmbeddingStore,
 ) {
@@ -228,7 +228,7 @@ private fun MutableMap<ContentRetriever, String>.embedHearings(
     }
 }
 
-private fun MutableMap<ContentRetriever, String>.embedPersons(
+private fun MutableMap<ContentRetriever, String>.embedPersonsOfInterest(
     embeddingModel: EmbeddingModel,
     weaviateEmbeddingStore: WeaviateEmbeddingStore,
 ) {
@@ -253,7 +253,7 @@ private fun MutableMap<ContentRetriever, String>.embedPersons(
     }
 }
 
-private fun MutableMap<ContentRetriever, String>.embedProMemoria(
+private fun MutableMap<ContentRetriever, String>.embedMemos(
     embeddingModel: EmbeddingModel,
     weaviateEmbeddingStore: WeaviateEmbeddingStore,
 ) {
