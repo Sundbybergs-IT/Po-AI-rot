@@ -13,6 +13,8 @@ import dev.langchain4j.model.embedding.EmbeddingModel
 import dev.langchain4j.model.embedding.onnx.allminilml6v2.AllMiniLmL6V2EmbeddingModel
 import dev.langchain4j.model.openai.OpenAiChatModel
 import dev.langchain4j.model.openai.OpenAiChatModelName
+import dev.langchain4j.model.output.Response
+import dev.langchain4j.model.scoring.ScoringModel
 import dev.langchain4j.rag.DefaultRetrievalAugmentor
 import dev.langchain4j.rag.RetrievalAugmentor
 import dev.langchain4j.rag.content.retriever.ContentRetriever
@@ -42,7 +44,7 @@ fun main(args: Array<String>) {
         envProperties.getProperty("organization_id"),
         envProperties.getProperty("openai_api_key"),
         envProperties.getProperty("weaviate_api_key"),
-        envProperties.getProperty("weaviate_url")
+        envProperties.getProperty("weaviate_url"),
     )
     println(
         polymath.answer(
@@ -103,8 +105,14 @@ private fun createPolymath(
 
     val queryRouter: QueryRouter = LanguageModelQueryRouter(chatModel, retrieverToDescription)
 
+    // TODO: Implement content aggregation, https://github.com/Sundbybergs-IT/Po-AI-rot/issues/1
+    val maxContentAggregation = 500
+    val scoringModel = ScoringModel { _, _ -> Response.from(listOf(0.0)) }
+    val contentAggregator = CustomRankingContentAggregator(scoringModel, maxContentAggregation)
+
     val retrievalAugmentor: RetrievalAugmentor = DefaultRetrievalAugmentor.builder()
         .queryRouter(queryRouter)
+//        .contentAggregator(contentAggregator)
         .build()
 
     return AiServices.builder(Polymath::class.java)
