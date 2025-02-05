@@ -92,8 +92,32 @@ private fun createPolymath(
         .host(weaviateUrl)
         .build()
 
-    val retrieverToDescription: MutableMap<ContentRetriever, String> = HashMap()
+    val retrieverToDescription: MutableMap<ContentRetriever, String> = HashMap<ContentRetriever, String>().apply {
+        embedKommissions(embeddingModel, weaviateEmbeddingStore)
+        embedProtocols(embeddingModel, weaviateEmbeddingStore)
+        embedHearings(embeddingModel, weaviateEmbeddingStore)
+        embedPersons(embeddingModel, weaviateEmbeddingStore)
+        embedProMemoria(embeddingModel, weaviateEmbeddingStore)
+        embedFacts(embeddingModel, weaviateEmbeddingStore)
+    }
 
+    val queryRouter: QueryRouter = LanguageModelQueryRouter(chatModel, retrieverToDescription)
+
+    val retrievalAugmentor: RetrievalAugmentor = DefaultRetrievalAugmentor.builder()
+        .queryRouter(queryRouter)
+        .build()
+
+    return AiServices.builder(Polymath::class.java)
+        .chatLanguageModel(chatModel)
+        .retrievalAugmentor(retrievalAugmentor)
+        .chatMemory(MessageWindowChatMemory.withMaxMessages(1))
+        .build()
+}
+
+private fun MutableMap<ContentRetriever, String>.embedKommissions(
+    embeddingModel: EmbeddingModel,
+    weaviateEmbeddingStore: WeaviateEmbeddingStore,
+) {
     for (kommission in getAll(
         Triple(
             "Granskningskommissionens betänkande i anledning av Brottsutredningen efter mordet på statsminister Olof Palme",
@@ -105,9 +129,14 @@ private fun createPolymath(
         maxResults = 5,
         minScore = 0.7,
     )) {
-        retrieverToDescription[kommission.second] = "${kommission.first}. Källa: ${kommission.third}"
+        this[kommission.second] = "${kommission.first}. Källa: ${kommission.third}"
     }
+}
 
+private fun MutableMap<ContentRetriever, String>.embedProtocols(
+    embeddingModel: EmbeddingModel,
+    weaviateEmbeddingStore: WeaviateEmbeddingStore,
+) {
     for (protocol in getAll(
         Triple(
             "protokoll skrivet av Brigitta Brolund. Källa: pol-1986-02-28-Anteckningar-Brigitta-Brolund-ledningscentralen",
@@ -124,10 +153,15 @@ private fun createPolymath(
         maxResults = 20,
         minScore = 0.7,
     )) {
-        retrieverToDescription[protocol.second] =
+        this[protocol.second] =
             "polisförhör av ${protocol.first} med anledning av mordet på Olof Palme. Källa: ${protocol.third}"
     }
+}
 
+private fun MutableMap<ContentRetriever, String>.embedHearings(
+    embeddingModel: EmbeddingModel,
+    weaviateEmbeddingStore: WeaviateEmbeddingStore,
+) {
     for (hearing in getAll(
         Triple(
             "Lars Jepsson 1 mars 1986",
@@ -189,10 +223,15 @@ private fun createPolymath(
         maxResults = 30,
         minScore = 0.7,
     )) {
-        retrieverToDescription[hearing.second] =
+        this[hearing.second] =
             "polisförhör av ${hearing.first} med anledning av mordet på Olof Palme. Källa: ${hearing.third}"
     }
+}
 
+private fun MutableMap<ContentRetriever, String>.embedPersons(
+    embeddingModel: EmbeddingModel,
+    weaviateEmbeddingStore: WeaviateEmbeddingStore,
+) {
     for (person in getAll(
         Triple("mördaren", "/mop/txt/personer/mordaren.txt", ""),
         Triple("Carl Gustav Östling", "/mop/txt/personer/carl-gustav-östling.txt", ""),
@@ -210,9 +249,14 @@ private fun createPolymath(
         maxResults = 25,
         minScore = 0.6,
     )) {
-        retrieverToDescription[person.second] = "Allmänna faktauppgifter om ${person.first}"
+        this[person.second] = "Allmänna faktauppgifter om ${person.first}"
     }
+}
 
+private fun MutableMap<ContentRetriever, String>.embedProMemoria(
+    embeddingModel: EmbeddingModel,
+    weaviateEmbeddingStore: WeaviateEmbeddingStore,
+) {
     for (proMemoria in getAll(
         Triple(
             "Uppföljning av Engström",
@@ -230,9 +274,14 @@ private fun createPolymath(
         maxResults = 25,
         minScore = 0.6,
     )) {
-        retrieverToDescription[proMemoria.second] = "polis-promemoria om mordet på Olof Palme. ${proMemoria.first}"
+        this[proMemoria.second] = "polis-promemoria om mordet på Olof Palme. ${proMemoria.first}"
     }
+}
 
+private fun MutableMap<ContentRetriever, String>.embedFacts(
+    embeddingModel: EmbeddingModel,
+    weaviateEmbeddingStore: WeaviateEmbeddingStore,
+) {
     for (fact in getAll(
         Triple("Fakta om mordet", "/mop/txt/facts.txt", "Ingen särskild källa, allmänna uppgifter"),
         embeddingModel = embeddingModel,
@@ -240,20 +289,8 @@ private fun createPolymath(
         maxResults = 10,
         minScore = 0.6,
     )) {
-        retrieverToDescription[fact.second] ="fakta om mordet på Olof Palme. ${fact.first}"
+        this[fact.second] = "fakta om mordet på Olof Palme. ${fact.first}"
     }
-
-    val queryRouter: QueryRouter = LanguageModelQueryRouter(chatModel, retrieverToDescription)
-
-    val retrievalAugmentor: RetrievalAugmentor = DefaultRetrievalAugmentor.builder()
-        .queryRouter(queryRouter)
-        .build()
-
-    return AiServices.builder(Polymath::class.java)
-        .chatLanguageModel(chatModel)
-        .retrievalAugmentor(retrievalAugmentor)
-        .chatMemory(MessageWindowChatMemory.withMaxMessages(1))
-        .build()
 }
 
 fun getAll(
