@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
+
 plugins {
 	alias(libs.plugins.spring.boot) apply true
 	alias(libs.plugins.spring.dependencymanagement) apply true
@@ -28,7 +30,7 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
-tasks.named("compileKotlin", org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask::class.java) {
+tasks.named("compileKotlin", KotlinCompilationTask::class.java) {
 	compilerOptions {
 		freeCompilerArgs.add("-Xjsr305=strict")
 	}
