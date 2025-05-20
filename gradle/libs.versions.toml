@@ -1,7 +1,7 @@
 [versions]
 kotlin = "2.1.21"
 langchain4j = "1.0.1"
-spring-boot = "3.3.4"
+spring-boot = "3.4.5"
 spring-dependency-management = "1.1.6"
 
 [libraries]
