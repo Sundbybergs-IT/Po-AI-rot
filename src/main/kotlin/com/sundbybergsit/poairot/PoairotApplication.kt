@@ -83,7 +83,7 @@ private fun createPolymath(
         .organizationId(openAiOrganizationId)
         .apiKey(openAiApiKey)
         .maxRetries(2)
-        .modelName(OpenAiChatModelName.GPT_4)
+        .modelName(OpenAiChatModelName.GPT_4_1_2025_04_14)
         .build()
 
     val embeddingModel: EmbeddingModel = AllMiniLmL6V2EmbeddingModel()
@@ -96,6 +96,8 @@ private fun createPolymath(
 
     val retrieverToDescription: MutableMap<ContentRetriever, String> = HashMap<ContentRetriever, String>().apply {
         embedPersonsOfInterest(embeddingModel, weaviateEmbeddingStore)
+        embedCuriosities(embeddingModel, weaviateEmbeddingStore)
+        embedArticles(embeddingModel, weaviateEmbeddingStore)
         embedFacts(embeddingModel, weaviateEmbeddingStore)
         embedProtocols(embeddingModel, weaviateEmbeddingStore)
         embedHearings(embeddingModel, weaviateEmbeddingStore)
@@ -283,6 +285,36 @@ private fun MutableMap<ContentRetriever, String>.embedMemos(
         minScore = 0.6,
     )) {
         this[proMemoria.second] = "polis-promemoria om mordet på Olof Palme. ${proMemoria.first}"
+    }
+}
+
+private fun MutableMap<ContentRetriever, String>.embedArticles(
+    embeddingModel: EmbeddingModel,
+    weaviateEmbeddingStore: WeaviateEmbeddingStore,
+) {
+    for (fact in getAll(
+        Triple("Säkerhetspolisens hemlighet från mordnatten", "/mop/txt/granskningar/kvartal-sakerhetspolisens-hemlighet-fran-mordnatten.txt", "En artikel om Säpo från tidningen Kvartal"),
+        embeddingModel = embeddingModel,
+        weaviateEmbeddingStore = weaviateEmbeddingStore,
+        maxResults = 10,
+        minScore = 0.6,
+    )) {
+        this[fact.second] = "Säkerhetspolisens hemlighet från natten då Olof Palme blev mördad. ${fact.first}"
+    }
+}
+
+private fun MutableMap<ContentRetriever, String>.embedCuriosities(
+    embeddingModel: EmbeddingModel,
+    weaviateEmbeddingStore: WeaviateEmbeddingStore,
+) {
+    for (fact in getAll(
+        Triple("Mystiska omständigheter kring utredningen", "/mop/txt/mystiskt.txt", "Mystiska omständigheter som saknar förklaring"),
+        embeddingModel = embeddingModel,
+        weaviateEmbeddingStore = weaviateEmbeddingStore,
+        maxResults = 10,
+        minScore = 0.6,
+    )) {
+        this[fact.second] = "mystiska detaljer kring utredningen av mordet på Olof Palme. ${fact.first}"
     }
 }
 
