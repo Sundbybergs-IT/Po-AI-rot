@@ -8,7 +8,7 @@ import dev.langchain4j.data.document.splitter.DocumentSplitters
 import dev.langchain4j.data.embedding.Embedding
 import dev.langchain4j.data.segment.TextSegment
 import dev.langchain4j.memory.chat.MessageWindowChatMemory
-import dev.langchain4j.model.chat.ChatLanguageModel
+import dev.langchain4j.model.chat.ChatModel
 import dev.langchain4j.model.embedding.EmbeddingModel
 import dev.langchain4j.model.embedding.onnx.allminilml6v2.AllMiniLmL6V2EmbeddingModel
 import dev.langchain4j.model.openai.OpenAiChatModel
@@ -79,7 +79,7 @@ private fun createPolymath(
     weaviateApiKey: String,
     weaviateUrl: String,
 ): Polymath {
-    val chatModel: ChatLanguageModel = OpenAiChatModel.builder()
+    val chatModel: ChatModel = OpenAiChatModel.builder()
         .organizationId(openAiOrganizationId)
         .apiKey(openAiApiKey)
         .maxRetries(2)
@@ -116,7 +116,7 @@ private fun createPolymath(
         .build()
 
     return AiServices.builder(Polymath::class.java)
-        .chatLanguageModel(chatModel)
+        .chatModel(chatModel)
         .retrievalAugmentor(retrievalAugmentor)
         .chatMemory(MessageWindowChatMemory.withMaxMessages(1))
         .build()
