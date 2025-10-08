@@ -244,6 +244,8 @@ private fun MutableMap<ContentRetriever, String>.embedPersonsOfInterest(
 ) {
     for (person in getAll(
         Triple("mördaren", "/mop/txt/personer/mordaren.txt", ""),
+        Triple("Anthony White", "/mop/txt/personer/anthony-white.txt", ""),
+        Triple("Eugene de Kock", "/mop/txt/personer/eugene-de-kock.txt", ""),
         Triple("Carl Gustav Östling", "/mop/txt/personer/carl-gustav-östling.txt", ""),
         Triple("Christer Pettersson", "/mop/txt/personer/christer-pettersson.txt", ""),
         Triple("Christer Andersson", "/mop/txt/personer/christer-andersson.txt", ""),
