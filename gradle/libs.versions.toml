@@ -1,8 +1,8 @@
 [versions]
 kotlin = "2.2.0"
-langchain4j = "1.7.1"
-langchain4j-integrations = "1.7.1-beta14"
-spring-boot = "3.5.4"
+langchain4j = "1.9.1"
+langchain4j-integrations = "1.9.1-beta17"
+spring-boot = "4.0.0"
 spring-dependency-management = "1.1.7"
 
 [libraries]
