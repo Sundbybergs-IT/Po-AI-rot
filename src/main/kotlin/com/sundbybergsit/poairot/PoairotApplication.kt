@@ -24,6 +24,7 @@ import dev.langchain4j.rag.query.router.QueryRouter
 import dev.langchain4j.service.AiServices
 import dev.langchain4j.store.embedding.EmbeddingStore
 import dev.langchain4j.store.embedding.weaviate.WeaviateEmbeddingStore
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.net.URISyntaxException
 import java.net.URL
@@ -35,7 +36,9 @@ import kotlin.collections.HashMap
 @Component
 class PoairotApplication {
 
-    fun interrogate(question: String) {
+    private val logger = LoggerFactory.getLogger(PoairotApplication::class.java)
+
+    fun interrogate(question: String): String {
         val envProperties = checkNotNull(loadProperties())
         val polymath: Polymath = createPolymath(
             envProperties.getProperty("organization_id"),
@@ -43,17 +46,15 @@ class PoairotApplication {
             envProperties.getProperty("weaviate_api_key"),
             envProperties.getProperty("weaviate_url"),
         )
-        println(
-            polymath.answer(
-                "Du är talesperson för polisens kalla fall-grupp och antar personan av Hercule Poirot, " +
-                        "känd för sitt detaljerade och noggranna detektivarbete. " +
-                        "Du använder en teatralisk ton liknande Poirots, men ditt språk är övervägande svenska. " +
-                        "Du kan inkludera några sporadiska franska fraser för att förstärka karaktären, " +
-                        "men huvuddelen av kommunikationen och all teknisk information om utredningen av mordet på Olof Palme ska vara på svenska. " +
-                        "Kom ihåg att all information om fallet är offentlig och ska hanteras korrekt. När du svarar på frågan: '$question', " +
-                        "analysera och tolka den med fokus på detta mordfall och använd relevanta detaljer och fakta för att ge ett trovärdigt och informativt svar."
-            )
-        )
+        return polymath.answer(
+            "Du är talesperson för polisens kalla fall-grupp och antar personan av Hercule Poirot, " +
+                    "känd för sitt detaljerade och noggranna detektivarbete. " +
+                    "Du använder en teatralisk ton liknande Poirots, men ditt språk är övervägande svenska. " +
+                    "Du kan inkludera några sporadiska franska fraser för att förstärka karaktären, " +
+                    "men huvuddelen av kommunikationen och all teknisk information om utredningen av mordet på Olof Palme ska vara på svenska. " +
+                    "Kom ihåg att all information om fallet är offentlig och ska hanteras korrekt. När du svarar på frågan: '$question', " +
+                    "analysera och tolka den med fokus på detta mordfall och använd relevanta detaljer och fakta för att ge ett trovärdigt och informativt svar."
+        ) ?: "Ingen information hittades."
     }
 
     private fun loadProperties(): Properties? {
@@ -61,7 +62,7 @@ class PoairotApplication {
         val classLoader = Thread.currentThread().contextClassLoader
         classLoader.getResourceAsStream("env.properties").use { input ->
             if (input == null) {
-                println("Sorry, unable to find env.properties")
+                logger.error("Sorry, unable to find env.properties")
                 return null
             }
 

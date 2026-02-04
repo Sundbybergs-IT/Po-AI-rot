@@ -20,12 +20,15 @@ repositories {
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
+	implementation(libs.spring.boot.starter.webflux)
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
+	implementation(libs.jackson.module.kotlin)
 
 	api(libs.langchain4j)
-	implementation(libs.langchain4j.open.ai.spring.boot.starter)
+	implementation(libs.langchain4j.open.ai)
 	implementation(libs.langchain4j.embeddings.all.minilm.l6.v2)
 	implementation(libs.langchain4j.weaviate)
+	implementation(libs.mcp.spring.webflux)
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }

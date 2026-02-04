@@ -2,14 +2,18 @@
 kotlin = "2.2.0"
 langchain4j = "1.9.1"
 langchain4j-integrations = "1.9.1-beta17"
+mcp = "0.7.0"
 spring-boot = "4.0.0"
 spring-dependency-management = "1.1.7"
 
 [libraries]
 langchain4j = { module = "dev.langchain4j:langchain4j", version.ref = "langchain4j" }
-langchain4j-open-ai-spring-boot-starter = { module = "dev.langchain4j:langchain4j-open-ai-spring-boot-starter", version.ref = "langchain4j-integrations" }
+langchain4j-open-ai = { module = "dev.langchain4j:langchain4j-open-ai", version.ref = "langchain4j" }
 langchain4j-embeddings-all-minilm-l6-v2 = { module = "dev.langchain4j:langchain4j-embeddings-all-minilm-l6-v2", version.ref = "langchain4j-integrations" }
 langchain4j-weaviate = { module = "dev.langchain4j:langchain4j-weaviate", version.ref = "langchain4j-integrations" }
+mcp-spring-webflux = { module = "io.modelcontextprotocol.sdk:mcp-spring-webflux", version.ref = "mcp" }
+spring-boot-starter-webflux = { module = "org.springframework.boot:spring-boot-starter-webflux" }
+jackson-module-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin" }
 
 [plugins]
 spring-dependencymanagement = { id = "io.spring.dependency-management", version.ref = "spring-dependency-management" }
