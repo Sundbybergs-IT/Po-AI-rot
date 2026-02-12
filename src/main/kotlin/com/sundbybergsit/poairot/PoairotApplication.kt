@@ -111,7 +111,7 @@ class PoairotApplication {
 
         val retrievalAugmentor: RetrievalAugmentor = DefaultRetrievalAugmentor.builder()
             .queryRouter(queryRouter)
-//        .contentAggregator(contentAggregator)
+            .contentAggregator(contentAggregator)
             .build()
 
         return AiServices.builder(Polymath::class.java)
@@ -292,7 +292,11 @@ class PoairotApplication {
         weaviateEmbeddingStore: WeaviateEmbeddingStore,
     ) {
         for (fact in getAll(
-            Triple("Säkerhetspolisens hemlighet från mordnatten", "/mop/txt/granskningar/kvartal-sakerhetspolisens-hemlighet-fran-mordnatten.txt", "En artikel om Säpo från tidningen Kvartal"),
+            Triple(
+                "Säkerhetspolisens hemlighet från mordnatten",
+                "/mop/txt/granskningar/kvartal-sakerhetspolisens-hemlighet-fran-mordnatten.txt",
+                "En artikel om Säpo från tidningen Kvartal"
+            ),
             embeddingModel = embeddingModel,
             weaviateEmbeddingStore = weaviateEmbeddingStore,
             maxResults = 10,
@@ -307,7 +311,11 @@ class PoairotApplication {
         weaviateEmbeddingStore: WeaviateEmbeddingStore,
     ) {
         for (fact in getAll(
-            Triple("Mystiska omständigheter kring utredningen", "/mop/txt/mystiskt.txt", "Mystiska omständigheter som saknar förklaring"),
+            Triple(
+                "Mystiska omständigheter kring utredningen",
+                "/mop/txt/mystiskt.txt",
+                "Mystiska omständigheter som saknar förklaring"
+            ),
             embeddingModel = embeddingModel,
             weaviateEmbeddingStore = weaviateEmbeddingStore,
             maxResults = 10,
@@ -346,7 +354,13 @@ class PoairotApplication {
                     titleFileNameTriple.first,
                     EmbeddingStoreContentRetriever.builder()
                         .displayName("EmbStoreRetriever: ${titleFileNameTriple.first}")
-                        .embeddingStore(embed(toPath(titleFileNameTriple.second), embeddingModel, weaviateEmbeddingStore))
+                        .embeddingStore(
+                            embed(
+                                toPath(titleFileNameTriple.second),
+                                embeddingModel,
+                                weaviateEmbeddingStore
+                            )
+                        )
                         .embeddingModel(embeddingModel)
                         .maxResults(maxResults)
                         .minScore(minScore)
