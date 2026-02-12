@@ -2,7 +2,8 @@
 kotlin = "2.3.10"
 langchain4j = "1.11.0"
 langchain4j-integrations = "1.11.0-beta19"
-spring-boot = "4.0.2"
+# Cannot upgrade easily, https://github.com/langchain4j/langchain4j/issues/4268
+spring-boot = "3.5.4"
 spring-dependency-management = "1.1.7"
 
 [libraries]

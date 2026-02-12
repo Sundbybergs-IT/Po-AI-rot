@@ -14,7 +14,7 @@ Go to weaviate.cloud (free option is available) and create a weaviate cluster an
 
 ## OpenAPI
 Use OpenAPI credentials and set the following in env.properties:
-- `openai_api_key`
+- `langchain4j.open-ai.chat-model.api-key`
 - `organization_id`
 
 # Instructions
